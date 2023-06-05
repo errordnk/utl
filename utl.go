@@ -6,7 +6,7 @@ import (
     "math"
 )
 
-func Rndstr(l int) string {
+func RndStr(l int) string {
     buff := make([]byte, int(math.Ceil(float64(l)/float64(1.33333333333))))
     rand.Read(buff)
     str := base64.RawURLEncoding.EncodeToString(buff)
