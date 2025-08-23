@@ -1,10 +1,12 @@
 package utl
 
 import (
-    "crypto/rand"
-    "encoding/base64"
-    "math"
-   	"net/http"
+	"crypto/rand"
+	"encoding/base64"
+	"io"
+	"math"
+	"net/http"
+	"strings"
 )
 
 func RndStr(l int) string {
