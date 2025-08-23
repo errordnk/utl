@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"reflect"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -299,6 +300,9 @@ func SSD() (rr uint64, ww uint64, dt uint64, df uint64, du uint64, ok bool) {
 		ww += u64 * 512
 	}
 	ssd, err := disk.Usage("/")
+	if runtime.GOOS == "windows" {
+		ssd, err = disk.Usage(`C:\`)
+	}
 
 	if err != nil {
 		ok = false
