@@ -10,9 +10,12 @@ import (
 	"os"
 	"os/exec"
 	"reflect"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/shirou/gopsutil/v4/disk"
 )
 
 func RndStr(l int) string {
@@ -265,37 +268,49 @@ func MEM() (memtotal, memfree, swaptotal, swapfree, tmp uint64) {
 	return
 }
 
-/*
-	func SSD() (rr uint64, ww uint64, dt uint64, df uint64, du float64) {
-		file, err := os.Open("/proc/diskstats")
+func SSD() (rr uint64, ww uint64, dt uint64, df uint64, du uint64, ok bool) {
+	file, err := os.Open("/proc/diskstats")
+	if err != nil {
+		return
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	var u64 uint64
+	for scanner.Scan() {
+		fields := strings.Fields(scanner.Text())
+		if len(fields) < 14 {
+			continue
+		}
+		if fields[0] != "8" {
+			continue
+		}
+		if regexp.MustCompile(`\d`).MatchString(fields[2]) {
+			continue
+		}
+		u64, err = strconv.ParseUint(fields[5], 10, 64)
 		if err != nil {
-			return
+			continue
 		}
-		defer file.Close()
-		scanner := bufio.NewScanner(file)
-		var u64 uint64
-		for scanner.Scan() {
-			fields := strings.Fields(scanner.Text())
-			if len(fields) < 14 {
-				continue
-			}
-			if fields[0] != "8" {
-				continue
-			}
-			if regexp.MustCompile(`\d`).MatchString(fields[2]) {
-				continue
-			}
-			u64, err = strconv.ParseUint(fields[5], 10, 64)
-			if err != nil {
-				continue
-			}
-			rr += u64 * 512
-			u64, err = strconv.ParseUint(fields[9], 10, 64)
-			if err != nil {
-				continue
-			}
-			ww += u64 * 512
+		rr += u64 * 512
+		u64, err = strconv.ParseUint(fields[9], 10, 64)
+		if err != nil {
+			continue
 		}
+		ww += u64 * 512
+	}
+	ssd, err := disk.Usage("/")
+
+	if err != nil {
+		ok = false
+		return
+	}
+
+	dt = ssd.Total
+	du = ssd.Used
+	df = ssd.Free
+	ok = true
+
+	/*
 		if runtime.GOOS != "windows" {
 			fs := syscall.Statfs_t{}
 			syscall.Statfs("/", &fs)
@@ -318,9 +333,10 @@ func MEM() (memtotal, memfree, swaptotal, swapfree, tmp uint64) {
 			}
 			ok = false
 		}
-		return
-	}
-*/
+	*/
+	return
+}
+
 func NET() (ii uint64, oo uint64) {
 	file, err := os.Open("/proc/net/dev")
 	if err != nil {
