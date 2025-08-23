@@ -3,6 +3,8 @@ package utl
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"encoding/json"
+	"fmt"
 	"io"
 	"math"
 	"net/http"
@@ -134,4 +136,20 @@ func Exec(com string) ([]byte, error) {
 		return output, err
 	}
 	return output, nil
+}
+
+func PrettyPrint(v interface{}) (err error) {
+	b, err := json.MarshalIndent(v, "", "  ")
+	if err == nil {
+		fmt.Println(string(b))
+	}
+	return
+}
+
+func PrettyString(v interface{}) string {
+	b, err := json.MarshalIndent(v, "", "  ")
+	if err == nil {
+		return string(b)
+	}
+	return ""
 }
