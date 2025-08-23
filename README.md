@@ -1,2 +1,2 @@
 # utl
-common utilities
+common errordnk utilities
