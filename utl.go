@@ -47,6 +47,12 @@ func Rows(path string) ([]string, error) {
 	return rows, nil
 }
 
+func Cols(row string) []string {
+	space := regexp.MustCompile(`\s+`)
+	row = space.ReplaceAllString(row, " ")
+	return strings.Split(row, " ")
+}
+
 func IsNum(str string) bool {
 	if len(str) == 0 {
 		return false
