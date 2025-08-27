@@ -167,7 +167,17 @@ func Exec(com string) ([]byte, error) {
 	return output, nil
 }
 
-func PrettyPrint(v interface{}) (err error) {
+func CutString(s string, n int) string {
+	if len(s) <= n {
+		return s
+	}
+	if n%2 == 0 {
+		return s[:n/2-2] + "..." + s[len(s)-n/2-1:]
+	}
+	return s[:n/2-1] + "..." + s[len(s)-n/2-1:]
+}
+
+func PrettyPrint(v any) (err error) {
 	b, err := json.MarshalIndent(v, "", "  ")
 	if err == nil {
 		fmt.Println(string(b))
@@ -175,7 +185,7 @@ func PrettyPrint(v interface{}) (err error) {
 	return
 }
 
-func PrettyString(v interface{}) string {
+func PrettyString(v any) string {
 	b, err := json.MarshalIndent(v, "", "  ")
 	if err == nil {
 		return string(b)
