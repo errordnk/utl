@@ -193,6 +193,19 @@ func PrettyString(v any) string {
 	return ""
 }
 
+func Run(com string) error {
+	arr := strings.Split(com, " ")
+	cmd := exec.Command(arr[0], arr[1:]...)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	//cmd.Stderr = os.Stderr
+	err := cmd.Run()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func LA() (la1, la5, la15 float64) {
 	file, err := os.Open("/proc/loadavg")
 	if err != nil {
