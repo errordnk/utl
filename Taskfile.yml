@@ -1,0 +1,59 @@
+version: '3'
+
+vars:
+  UTIL_BINS: creboot crestart addline swap
+
+tasks:
+  default:
+    desc: Pull and build all utilities
+    cmds:
+      - git pull
+      - task: build
+
+  build:
+    desc: Build all utility binaries
+    cmds:
+      - for: { var: UTIL_BINS }
+        task: '{{.ITEM}}'
+
+  creboot:
+    desc: Build creboot
+    sources:
+      - ./creboot.c
+    generates:
+      - /home/dnk/bin/creboot
+    cmds:
+      - gcc -O3 -s -o ~/bin/creboot ./creboot.c
+
+  crestart:
+    desc: Build crestart
+    sources:
+      - ./crestart.c
+    generates:
+      - /home/dnk/bin/crestart
+    cmds:
+      - gcc -O3 -s -o ~/bin/crestart ./crestart.c
+
+  addline:
+    desc: Build addline
+    sources:
+      - ./addline.c
+    generates:
+      - /home/dnk/bin/addline
+    cmds:
+      - gcc -O3 -s -o ~/bin/addline ./addline.c
+
+  swap:
+    desc: Build swap
+    sources:
+      - ./swap.c
+    generates:
+      - /home/dnk/bin/swap
+    cmds:
+      - gcc -O3 -s -o ~/bin/swap ./swap.c
+
+  clean:
+    desc: Remove all utility binaries
+    cmds:
+      - for: { var: UTIL_BINS }
+        cmd: rm -f ~/bin/{{.ITEM}}
